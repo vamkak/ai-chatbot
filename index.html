@@ -1,0 +1,49 @@
+<!doctype html>
+<!-- The chat page.
+     What it does: keeps the conversation in a list named history and sends all of it
+     to /chat on every turn, together with the passphrase. The server keeps nothing.
+     Predict before you run: refresh the page. What does the chatbot remember? -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Café chatbot</title>
+  <style>
+    body { font-family: sans-serif; max-width: 40em; margin: 2em auto; }
+    .me { color: #333; }
+    .bot { color: #060; }
+  </style>
+</head>
+<body>
+  <h1>Café chatbot</h1>
+  <div id="chat"></div>
+  <input id="box" size="60" placeholder="Type your message and press Enter">
+  <script>
+    const passphrase = prompt("Enter the passphrase");   // NEW in stage 9: asked once when the page loads
+    const history = [];   // the list; it is created empty every time the page loads
+    const chat = document.getElementById("chat");
+    const box = document.getElementById("box");
+
+    box.addEventListener("keydown", async (event) => {
+      if (event.key !== "Enter" || box.value === "") return;
+      const text = box.value;
+      box.value = "";
+      history.push({ role: "user", content: text });   // the typed turn joins the list
+      show("me", text);
+      const answer = await fetch("/chat", {   // the whole list goes to the server
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ history, passphrase }),   // NEW in stage 9: the passphrase is sent with every request
+      }).then((response) => response.json());
+      history.push({ role: "assistant", content: answer.reply });   // the reply joins the list
+      show("bot", answer.reply + "  (tokens sent: " + answer.tokens + ")");
+    });
+
+    function show(who, text) {
+      const line = document.createElement("p");
+      line.className = who;
+      line.textContent = text;
+      chat.appendChild(line);
+    }
+  </script>
+</body>
+</html>
