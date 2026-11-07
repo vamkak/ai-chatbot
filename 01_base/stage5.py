@@ -33,7 +33,7 @@ system_entry = {
 # 3. Create the list once, and set how many recent entries are kept.
 #    Two entries make one turn: your question and the reply.
 history = [system_entry]
-KEEP = 2
+KEEP = 6
 
 # 2b. The memory test: type these three turns in this order, then type quit.
 print("Goal: see the memory fail when the list is trimmed. KEEP = 2 keeps one turn. Type the three turns below in this order; turn 2 should fail.")   # NEW in stage 5
